@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email String @unique @db.VarChar(255)
+  password String @db.VarChar(255)
+  salt String @db.VarChar(255)
+  location String @db.VarChar(255)
+  views View[]
+  comments Comment[]
+}
+model Tag{
+  id Int @id @default(autoincrement())
+  value String @unique
+  videos Video[]
+}
+
+model Video{
+  id Int @id @default(autoincrement())
+  title String  @db.VarChar(255)
+  thumbNail String @db.VarChar(255)
+  description String @db.VarChar(255)
+  duration String @db.VarChar(255)
+  createdAt DateTime @default(now())
+  genre Tag @relation(fields: [tagId], references: [id])
+  tagId Int
+  views View[]
+  comments Comment[]
+
+}
+model View{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  video Video @relation(fields: [videoId], references: [id])
+  videoId Int
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+model Comment{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  video Video @relation(fields: [videoId], references: [id])
+  videoId Int
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+}
